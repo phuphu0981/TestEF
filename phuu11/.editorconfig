@@ -1,0 +1,13 @@
+[*.cs]
+
+# IDE0210: Convert to top-level statements
+csharp_style_prefer_top_level_statements = true
+
+# IDE0058: Expression value is never used
+csharp_style_unused_value_expression_statement_preference = unused_local_variable
+
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none
+
+# CS8622: Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
+dotnet_diagnostic.CS8622.severity = warning

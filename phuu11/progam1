@@ -1,0 +1,122 @@
+using System;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using phuu11;
+using phuu11.Models;
+
+public class Program
+{
+
+    static  void CreateDb(){
+        using var DbContext = new ProductDbContext();
+        var dbname = DbContext.Database.GetDbConnection().Database;
+
+        var kq = DbContext.Database.EnsureCreated();
+        if(kq)
+        {
+            Console.WriteLine($"tao {dbname} thanh cong");
+        }
+        else 
+        {
+            Console.WriteLine($"khong tao duoc {dbname}");
+        }
+
+    }
+    static  void DeleteDb(){
+
+        using var DbContext = new ProductDbContext();
+        var dbname = DbContext.Database.GetDbConnection().Database;
+
+        var kq = DbContext.Database.EnsureDeleted();
+        if(kq)
+        {
+            Console.WriteLine($"xoa {dbname} thanh cong");
+        }
+        else 
+        {
+            Console.WriteLine($"khong xoa duoc {dbname}");
+        }
+
+    }
+
+    static void InsertProduct(){
+        using var DbContext = new ProductDbContext();
+
+        // var p1 = new Product();
+        // p1.ProductName = "sp1";
+        // p1.Provider = "CTY 2";
+        // DbContext.Add(p1);
+
+        var products = new object[]{
+            new Product() {ProductName = "sp2" , Provider = "CTY 2"},
+            new Product() {ProductName = "sp3" , Provider = "CTY 3"},
+            new Product() {ProductName = "sp4" , Provider = "CTY 4"},
+        };
+        DbContext.AddRange(products);
+        int number_rows = DbContext.SaveChanges();
+        Console.WriteLine($"da chen {number_rows} dong du lieu");    
+    }
+
+    static void ReadProduct(){
+        using var DbContext = new ProductDbContext();
+
+        // var products = DbContext.products.ToList();
+        // products.ForEach(products => products.PrinInfo());
+
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        Product  qr = (from product in DbContext.products
+                where product.Provider.Contains("CTY")
+                select product).FirstOrDefault();
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+
+        if (qr!= null){
+        qr.PrinInfo();
+       }
+    }
+
+    static void UpdateProduct( int id, string newname){
+        using var DbContext = new ProductDbContext();
+
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        Product  product = (from p in DbContext.products
+                where p.ProductId == id
+                select p).FirstOrDefault();
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+
+        if(product != null){
+            product.ProductName = newname;
+            int number_rows = DbContext.SaveChanges();
+            Console.WriteLine($"da sua {number_rows} dong du lieu");    
+        }
+        
+    }
+
+    static void DeleteProduct(int id){
+         using var DbContext = new ProductDbContext();
+
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        Product  product = (from p in DbContext.products
+                where p.ProductId == id
+                select p).FirstOrDefault();
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+
+        if(product != null){
+            DbContext.Remove(product);
+            int number_rows = DbContext.SaveChanges();
+            Console.WriteLine($"da xoa {number_rows} dong du lieu");    
+        }
+    }
+    private static void Main(string[] args)
+    {
+        DeleteProduct(1);
+        // UpdateProduct( 1, "Phus");
+        //ReadProduct();
+        // InsertProduct();
+        // CreateDb();
+        // DeleteDb();
+        // CRUD -> Create, Read, Update, Delete
+
+    }
+}
